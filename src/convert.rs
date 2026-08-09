@@ -14,7 +14,9 @@ use crate::{
     CssNamespaceRule, CssPageRule, CssPropertyRule, CssRule, CssScopeRule, CssStyleDeclaration,
     CssStyleRule, CssStyleSheet, CssSupportsRule, OtherRule,
 };
-use muskitty_css::parser::{AtRule, ComponentValue, Declaration, QualifiedRule, Rule, Stylesheet};
+use muskitty_css::parser::{
+    parse_a_blocks_contents, AtRule, ComponentValue, Declaration, QualifiedRule, Rule, Stylesheet,
+};
 use muskitty_css::tokenizer::Token;
 
 /// 从 css-parser 的 [`Stylesheet`] 转换为 CSSOM 的 [`CssStyleSheet`]。
@@ -304,6 +306,25 @@ fn convert_other(ar: &AtRule) -> OtherRule {
         declarations,
         child_rules,
     }
+}
+
+/// CSSOM §4: parse a CSS declaration block（CSS Syntax §5.5.5）。
+///
+/// 把一段 style 文本（如 `"color: red; font-size: 12px"`）解析为
+/// [`CssStyleDeclaration`]。供 `element.style` 读写 style attribute。
+/// 非声明内容（内嵌 at-rule / 嵌套规则）被忽略，只取
+/// `Rule::Declarations`。
+pub fn parse_declaration_block(input: &str) -> CssStyleDeclaration {
+    let mut style = CssStyleDeclaration::new();
+    let contents = parse_a_blocks_contents(input);
+    for rule in &contents.rules {
+        if let Rule::Declarations(decls) = rule {
+            for d in decls {
+                style.push(convert_declaration(d));
+            }
+        }
+    }
+    style
 }
 
 /// 转换 [`Declaration`] → [`CssDeclaration`]。

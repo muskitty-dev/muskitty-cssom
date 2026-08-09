@@ -32,12 +32,14 @@
 
 pub mod convert;
 pub mod declaration;
+pub mod element_style;
 pub mod rule;
 pub mod serialize;
 pub mod stylesheet;
 
-pub use convert::{from_stylesheet, from_stylesheet_with_origin};
+pub use convert::{from_stylesheet, from_stylesheet_with_origin, parse_declaration_block};
 pub use declaration::{CssDeclaration, CssStyleDeclaration};
+pub use element_style::ElementStyle;
 pub use rule::{
     CssContainerRule, CssCounterStyleRule, CssFontFaceRule, CssImportRule, CssKeyframeRule,
     CssKeyframesRule, CssLayerBlockRule, CssLayerStatementRule, CssMediaRule, CssNamespaceRule,
