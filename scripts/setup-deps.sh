@@ -8,6 +8,7 @@
 # Dependency chain:
 #   muskitty-cssom → muskitty-css (path) → muskitty-css-parser (path)
 #                                        → muskitty-css-tokenizer (path)
+#   muskitty-cssom → muskitty-dom (path)
 #
 # All path deps are independent repos under muskitty-dev/.
 #
@@ -32,6 +33,7 @@ clone_if_absent() {
     fi
 }
 
+clone_if_absent https://github.com/muskitty-dev/muskitty-dom.git ../muskitty-dom
 clone_if_absent https://github.com/muskitty-dev/muskitty-css.git ../muskitty-css
 clone_if_absent https://github.com/muskitty-dev/muskitty-css-parser.git ../muskitty-css-parser
 clone_if_absent https://github.com/muskitty-dev/muskitty-css-tokenizer.git ../muskitty-css-tokenizer
