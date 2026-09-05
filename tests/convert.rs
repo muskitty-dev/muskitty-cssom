@@ -288,17 +288,13 @@ fn container_rule() {
 }
 
 #[test]
-fn other_at_rule_statement() {
+fn charset_at_rule_is_dropped() {
+    // §5.5.1: @charset 是 parse error，永远不会成为 stylesheet 的 rule
+    // （WPT css/css-syntax/charset-is-not-a-rule.html）。旧实现把它当作
+    // `Other` at-rule 保留，是过时行为。
     let ss = parse_stylesheet("@charset \"UTF-8\";");
     let om = from_stylesheet(&ss);
-    match &om.css_rules[0] {
-        CssRule::Other(r) => {
-            assert_eq!(r.name, "charset");
-            assert!(r.declarations.is_none());
-            assert!(r.child_rules.is_empty());
-        }
-        _ => panic!(),
-    }
+    assert_eq!(om.css_rules.len(), 0);
 }
 
 #[test]
