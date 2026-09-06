@@ -194,13 +194,25 @@ fn roundtrip_hash_color() {
 
 #[test]
 fn roundtrip_other_at_rule_statement() {
-    let css = "@charset \"UTF-8\";";
+    // 未识别的语句 at-rule roundtrip 保留原语义。@charset 已按 §5.5.1
+    // 在 parse 阶段丢弃，不再是 Other at-rule 的代表用例。
+    let css = "@foo bar;";
     let ss = parse_stylesheet(css);
     let om = from_stylesheet(&ss);
     let out = om.to_css_string();
-    assert!(out.starts_with("@charset"), "output: {}", out);
-    assert!(out.contains("UTF-8"), "output: {}", out);
+    assert!(out.starts_with("@foo"), "output: {}", out);
+    assert!(out.contains("bar"), "output: {}", out);
     assert!(out.ends_with(';'), "output: {}", out);
+}
+
+#[test]
+fn charset_at_rule_dropped_in_roundtrip() {
+    // §5.5.1: @charset 永远不会成为 stylesheet 的 rule
+    // （WPT css/css-syntax/charset-is-not-a-rule.html）。
+    let css = "@charset \"UTF-8\";";
+    let ss = parse_stylesheet(css);
+    let om = from_stylesheet(&ss);
+    assert_eq!(om.to_css_string(), "");
 }
 
 #[test]
